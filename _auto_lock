@@ -1,0 +1,32 @@
+#!/bin/bash
+#Replace with the ID of your USB device
+id="ID 1234:5678 Xiaomi Inc. Mi/Redmi series (MTP)"
+
+#runs every second
+while : 
+do
+
+if [ -z "`lsusb | grep "$id"`" ]
+
+then
+    echo "Device is NOT plugged in -> looks for unlocked"
+
+    if [ -n "`qdbus org.kde.screensaver /ScreenSaver org.freedesktop.ScreenSaver.GetActive | grep "false"`" ]
+    then
+        echo "Device is unlocked -> locks"
+        loginctl lock-session
+    fi
+    
+else
+    echo "Device is plugged in -> looks for locked"
+    
+    if [ -n "`qdbus org.kde.screensaver /ScreenSaver org.freedesktop.ScreenSaver.GetActive | grep "true"`" ]
+    then
+        echo "Device is locked -> unlocks"
+        loginctl unlock-session
+    fi
+fi
+
+sleep 1
+done
+ 
